@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { uuid } from 'uuidv4';
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { uuid } from "uuidv4";
 import api from "../api/contacts";
-import './App.css';
-import Header from './Header';
-import AddContact from './AddContact';
-import EditContact from './EditContact';
-import ContactList from './ContactList';
-import ContactDetail from './ContactDetail';
+import "./App.css";
+import Header from "./Header";
+import AddContact from "./AddContact";
+import EditContact from "./EditContact";
+import ContactList from "./ContactList";
+import ContactDetail from "./ContactDetail";
 
 function App() {
   const [contacts, setContacts] = useState([]);
@@ -23,11 +23,11 @@ function App() {
   const addContactHandler = async (contact) => {
     console.log(contact);
     const request = {
-      id:uuid(),
-      ...contact
+      id: uuid(),
+      ...contact,
     };
 
-    const response = await api.post("/contacts", request)
+    const response = await api.post("/contacts", request);
     console.log(response);
 
     setContacts([...contacts, response.data]);
@@ -35,15 +35,17 @@ function App() {
 
   const updateContactHandler = async (contact) => {
     const response = await api.put(`/contacts/${contact.id}`, contact);
-    const {id, name, email} = response.data;
-    setContacts(contacts.map(contact => {
-      return contact.id == id ? {...response.data} : contact;
-    }));
+    const { id, name, email } = response.data;
+    setContacts(
+      contacts.map((contact) => {
+        return contact.id == id ? { ...response.data } : contact;
+      })
+    );
   };
 
   const removeContactHandler = async (id) => {
     await api.delete(`/contacts/${id}`);
-    
+
     const newContactList = contacts.filter((contact) => {
       return contact.id !== id;
     });
@@ -53,7 +55,7 @@ function App() {
 
   const searchHandler = (searchTerm) => {
     setSearchTerm(searchTerm);
-    if(searchTerm !== "") {
+    if (searchTerm !== "") {
       const newContactList = contacts.filter((contact) => {
         return Object.values(contact)
           .join(" ")
@@ -61,21 +63,18 @@ function App() {
           .includes(searchTerm.toLowerCase());
       });
       setSearchResults(newContactList);
-    }
-    else {
+    } else {
       setSearchResults(contacts);
     }
   };
-  
-  useEffect(() => {
 
+  useEffect(() => {
     const getAllContacts = async () => {
       const allContacts = await retrieveContacts();
       if (allContacts) setContacts(allContacts);
     };
 
     getAllContacts();
-
   }, []);
 
   return (
@@ -83,30 +82,27 @@ function App() {
       <Router>
         <Header />
         <Switch>
-          <Route 
-            path="/" 
-            exact 
+          <Route
+            path="/"
+            exact
             render={(props) => (
-              <ContactList 
-                {...props} 
-                contacts={searchTerm.length < 1 ? contacts : searchResults} 
+              <ContactList
+                {...props}
+                contacts={searchTerm.length < 1 ? contacts : searchResults}
                 getContactId={removeContactHandler}
                 term={searchTerm}
                 searchKeyword={searchHandler}
               />
             )}
           />
-          <Route 
-            path="/add" 
+          <Route
+            path="/add"
             render={(props) => (
-              <AddContact
-                {...props}
-                addContactHandler={addContactHandler}
-              />
+              <AddContact {...props} addContactHandler={addContactHandler} />
             )}
           />
-          <Route 
-            path="/edit" 
+          <Route
+            path="/edit"
             render={(props) => (
               <EditContact
                 {...props}
@@ -114,15 +110,11 @@ function App() {
               />
             )}
           />
-          <Route
-            path="/contact/:id"
-            component={ContactDetail}
-          />
+          <Route path="/contact/:id" component={ContactDetail} />
         </Switch>
       </Router>
-      
     </div>
   );
-};
+}
 
 export default App;
