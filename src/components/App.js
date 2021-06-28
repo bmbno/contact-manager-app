@@ -10,8 +10,6 @@ import ContactList from './ContactList';
 import ContactDetail from './ContactDetail';
 
 function App() {
-  const LOCAL_STORAGE_KEY = "contacts";
-
   const [contacts, setContacts] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -70,8 +68,7 @@ function App() {
   };
   
   useEffect(() => {
-    // const retrieveContacts = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    // if (retrieveContacts) setContacts(retrieveContacts);
+
     const getAllContacts = async () => {
       const allContacts = await retrieveContacts();
       if (allContacts) setContacts(allContacts);
@@ -80,10 +77,6 @@ function App() {
     getAllContacts();
 
   }, []);
-
-  useEffect(() => {
-    // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(contacts));
-  }, [contacts]);
 
   return (
     <div className="ui container">
